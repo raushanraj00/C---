@@ -3,7 +3,7 @@ using namespace std;
 class Book{
     public: 
     void myname(){
-        cout<< "Hello Rohit";
+        cout<< "Hello World!" << endl;
     }
     
 };
