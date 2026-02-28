@@ -33,16 +33,19 @@ using namespace std;
 void pq(int arr[],int n, int target){
     int i = 0;
     int lb = -1, ub = -1; 
+    int count = 0; 
     for(int i =0; i<n; i++){
         if(arr[i]==target){
             if(lb==-1){
                 lb = i; 
             };
             ub = i; 
+            count++; 
         }
     }
     cout<< "LB = " << lb<< endl; 
     cout<< "UB = " << ub << endl; 
+    cout<< "No. of Occurance is:- " << count<< endl; 
 }
 int main()
 {
