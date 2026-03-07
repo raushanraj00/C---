@@ -10,7 +10,7 @@ int main(){
     for(int i =0; i<n; i++){
         cin>> arr[i]; 
     } 
-    cout<< "Enter kth integer to find"; 
+    cout<< "Enter kth integer to find : "; 
     cin>> k; 
     int start = 0, end = n-1, ans = n; 
 
