@@ -18,13 +18,17 @@ class Car{
     void work(){
         cout<< "I am working" << endl; 
     }
-
+    Car(string name, int weight){  // to call this parent constructor into child one
+        this-> name = name; 
+        this-> weight = weight; 
+    }
 }; 
 class BMW : public Car {
     private: 
     int price, model; 
     public: 
-    BMW(string name, int weight, int price , int model ){
+    BMW(string name, int weight, int price , int model ): Car(name, weight) // constructor of parent class is called in the initialization list of child class constructor
+    {
         this-> name = name; 
         this-> weight = weight ; 
         this-> price = price ; 
@@ -32,11 +36,10 @@ class BMW : public Car {
         cout<< "Name : " << name << endl; 
         cout<< "Weight : " << weight << endl; 
         cout<< "Price : " << price << endl ;
-        cout<< "Model : " << model << endl; 
-
-    }
-     
+        cout<< "Model : " << model << endl;
+    }  
 }; 
+// if we create bmw class object then it will automatically call the constructor of car class and then the constructor of bmw class because of inheritance and also we can access the function of car class using the object of bmw class because of inheritance
 int main(){
     BMW b1( "M5", 17000, 990000 , 330  );
     b1.work(); 
