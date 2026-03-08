@@ -23,6 +23,6 @@ class BMW : public Car{
 }; 
 int main(){
     BMW b1; // firstly parent class constructor will be called then child class constructor will be called . 
-
+    // in case of destructor . first child class destructor will be called then parent class destructor will be called 
     
 }
