@@ -15,5 +15,5 @@ class B:public A{
 int main(){
     B b1,b2;
     b1.show();  // this will call derived class 
-    b1.A::show();  
+    b1.A::show();  // this will call Main base class : 
 }
