@@ -17,5 +17,6 @@ int main(){
     base *ptr; 
     ptr = &d1; 
     ptr -> show(); 
-    
+    // or we can use scope resolution operator    
+    // as d1.base::show(); 
 }
