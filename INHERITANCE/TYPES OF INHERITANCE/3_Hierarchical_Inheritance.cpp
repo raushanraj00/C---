@@ -19,11 +19,10 @@ class Current : public Openaccount{
         cout<< "Current Account info." << endl; 
     }
 };  
-
 int main(){
     Current c1; 
-    // c1.saving();    // cant call child to child 
+    // c1.saving();    // can't call child to child 
     c1.accopen(); 
     c1.current();
-
+    return 0; 
 }
