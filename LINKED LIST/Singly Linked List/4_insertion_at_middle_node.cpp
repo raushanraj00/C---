@@ -14,7 +14,7 @@ class node{
 void insertatmid(node* &head, int d, int pos){
     node* temp = head; 
     int count = 1; 
-
+    
     while(count< pos-1){
         temp = temp-> next; 
         count++ ; 
