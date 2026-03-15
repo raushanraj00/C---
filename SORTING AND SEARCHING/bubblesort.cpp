@@ -9,9 +9,9 @@ int main(){
         cout<< "Enter Element " << i+1 << ": ";
         cin>> arr[i];
     }
-    for(int i = n-2; i>=0; i--){
+    for(int i = 0; i<n-1; i++){
         bool swapped = 0 ;
-        for(int j = 0 ; j<=i; j++ ){
+        for(int j = 0 ; j<n-1-i; j++ ){
             if(arr[j]> arr[j+1]){
                 swapped = 1 ;
                 swap(arr[j],arr[j+1]);
