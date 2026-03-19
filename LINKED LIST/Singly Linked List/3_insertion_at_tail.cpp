@@ -28,6 +28,7 @@ int main(){
     temp-> next = newnode; 
     temp = head; 
     
+    
     // to display final ll 
     while(temp!=NULL){
         cout<< temp-> data <<  " "; 
