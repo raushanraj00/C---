@@ -48,7 +48,6 @@ int main(){
 
 // #include <iostream> 
 // using namespace std; 
-
 // class Human{
 //   string religion,color; 
 //   public: 
