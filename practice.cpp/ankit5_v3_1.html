@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en" class="tech-bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusHub | CSE Productivity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; color: #e2e8f0; overflow-x: hidden; }
+
+        .tech-bg {
+            background: linear-gradient(-45deg, #020617, #0f172a, #1e1b4b, #312e81);
+            background-size: 400% 400%;
+            animation: techFlow 10s cubic-bezier(0.4,0,0.2,1) infinite;
+        }
+        @keyframes techFlow {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-panel {
+            background: rgba(15,23,42,0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s ease;
+        }
+        .glass-panel:hover {
+            border-color: rgba(59,130,246,0.4);
+            background: rgba(15,23,42,0.6);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+        }
+        .glass-panel.no-lift:hover { transform: none; }
+
+        .btn-tech { transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .btn-tech:hover { opacity: 0.8; transform: scale(1.04); box-shadow: 0 0 20px rgba(59,130,246,0.4); }
+
+        .modal-hidden { display: none; }
+        .modal-show   { display: flex; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Notification Panel ── */
+        #notifPanel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 14px);
+            right: 0;
+            width: 320px;
+            background: rgba(10,15,35,0.97);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 1.5rem;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+            z-index: 200;
+            animation: slideUp 0.3s ease-out;
+        }
+        #notifPanel.open { display: block; }
+
+        .notif-dot {
+            width: 8px; height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px; right: 2px;
+            animation: pulseDot 1.8s infinite;
+        }
+        @keyframes pulseDot {
+            0%,100% { transform: scale(1);   opacity: 1;   }
+            50%      { transform: scale(1.4); opacity: 0.6; }
+        }
+
+        /* ── Bar Graph ── */
+        .bar-chart-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            height: 150px;
+            width: 100%;
+            position: relative;
+        }
+        .bar-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 1;
+            height: 100%;
+            gap: 5px;
+        }
+        .bar-inner {
+            width: 100%;
+            border-radius: 8px 8px 4px 4px;
+            transition: height 0.9s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+            min-height: 4px;
+        }
+        .bar-inner:hover { filter: brightness(1.2); cursor: pointer; }
+        .bar-val-label   { font-size: 11px; font-weight: 800; color: #a5b4fc; min-height: 16px; }
+        .bar-day-label   { font-size: 10px; font-weight: 700; color: #475569; letter-spacing: 0.04em; }
+
+        /* ── Streak ── */
+        .streak-panel {
+            background: rgba(15,23,42,0.55);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(251,113,26,0.25);
+            border-radius: 1.5rem;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 0 40px rgba(251,113,26,0.1);
+        }
+        .streak-day {
+            flex: 1;
+            height: 52px;
+            border-radius: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .streak-day.active   { background: linear-gradient(135deg,#fb7c1a,#ef4444); box-shadow: 0 4px 18px rgba(251,113,26,0.45); }
+        .streak-day.inactive { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); }
+        .streak-day:hover    { transform: translateY(-3px); }
+        .streak-day-label    { font-size: 11px; font-weight: 700; color: #64748b; text-align: center; margin-bottom: 6px; }
+
+        /* ── Photo Cards ── */
+        .photo-card {
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+        }
+        .photo-card img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .photo-card:hover img { transform: scale(1.06); }
+        .photo-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(2,6,23,0.85) 0%, transparent 55%);
+            display: flex;
+            align-items: flex-end;
+            padding: 1.2rem 1.4rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .photo-card:hover .photo-card-overlay { opacity: 1; }
+
+        /* ── Quote Ticker ── */
+        .quote-ticker {
+            overflow: hidden;
+            position: relative;
+        }
+        .quote-track {
+            display: flex;
+            gap: 2rem;
+            animation: tickerScroll 40s linear infinite;
+            width: max-content;
+        }
+        .quote-track:hover { animation-play-state: paused; }
+        @keyframes tickerScroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+        .quote-pill {
+            background: rgba(99,102,241,0.12);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 999px;
+            padding: 0.5rem 1.4rem;
+            white-space: nowrap;
+            font-size: 13px;
+            color: #c7d2fe;
+            font-style: italic;
+        }
+        .quote-pill span { color: #6366f1; font-style: normal; font-weight: 700; margin-left: 0.5rem; }
+    </style>
+</head>
+<body>
+
+<!-- ── Features Modal ── -->
+<div id="featuresModal" class="fixed inset-0 bg-black/90 z-[100] modal-hidden items-center justify-center p-6">
+    <div class="glass-panel max-w-2xl w-full p-10 rounded-[2.5rem] relative">
+        <button onclick="toggleFeatures()" class="absolute top-8 right-8 text-slate-500 hover:text-white text-3xl"><i class="fa-solid fa-circle-xmark"></i></button>
+        <h2 class="text-3xl font-extrabold mb-8 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">System Capabilities</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                <h4 class="font-bold text-blue-400 mb-2"><i class="fa-solid fa-microchip mr-2"></i>CSE Core Timer</h4>
+                <p class="text-sm text-slate-400">Programmable focus cycles for deep programming sessions.</p>
+            </div>
+            <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                <h4 class="font-bold text-indigo-400 mb-2"><i class="fa-solid fa-database mr-2"></i>Task Persistence</h4>
+                <p class="text-sm text-slate-400">Manage task arrays and track completion logic in real-time.</p>
+            </div>
+        </div>
+        <button onclick="toggleFeatures()" class="btn-tech mt-8 w-full bg-slate-800 py-4 rounded-xl font-bold uppercase tracking-widest text-xs">Close Protocol</button>
+    </div>
+</div>
+
+<!-- ── Login Modal ── -->
+<div id="loginModal" class="fixed inset-0 bg-black/90 z-[100] modal-hidden items-center justify-center p-6">
+    <div class="glass-panel max-w-sm w-full p-10 rounded-[3rem] relative">
+        <button onclick="toggleLogin()" class="absolute top-8 right-8 text-slate-500 hover:text-white text-2xl"><i class="fa-solid fa-xmark"></i></button>
+        <h2 class="text-2xl font-black mb-8 text-white text-center">User Identification</h2>
+        <div class="space-y-5">
+            <input id="userName" type="text" placeholder="Student Name" class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 outline-none focus:border-blue-500 text-white">
+            <input id="userGoal" type="text" placeholder="Session Objective" class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 outline-none focus:border-blue-500 text-white">
+            <button onclick="handleLogin()" class="btn-tech w-full bg-gradient-to-r from-blue-600 to-indigo-600 py-4 rounded-2xl font-bold shadow-xl">Initialize Hub</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav class="flex justify-between items-center p-8 max-w-7xl mx-auto relative z-50">
+    <div class="text-3xl font-black tracking-tighter bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+        Focus<span class="text-blue-500">Hub.</span>
+    </div>
+    <div class="flex space-x-8 items-center">
+        <button onclick="toggleFeatures()" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition">Features</button>
+        <a href="#dashboard" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition">Dashboard</a>
+
+        <!-- 🔔 Bell -->
+        <div class="relative" id="notifWrapper">
+            <button onclick="toggleNotif()" class="relative w-10 h-10 flex items-center justify-center bg-slate-800/70 border border-slate-700 rounded-full hover:border-blue-500/60 transition text-lg">
+                <i class="fa-solid fa-bell text-slate-300"></i>
+                <span class="notif-dot"></span>
+            </button>
+            <div id="notifPanel">
+                <div class="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/5">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bell text-blue-400 text-sm"></i>
+                        <span class="text-sm font-black text-white tracking-wide">Notifications</span>
+                    </div>
+                    <button onclick="toggleNotif()" class="text-slate-500 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="flex flex-col items-center justify-center py-10 px-6 gap-3">
+                    <div class="w-14 h-14 rounded-full bg-slate-800/80 flex items-center justify-center text-2xl text-slate-600 border border-slate-700">
+                        <i class="fa-regular fa-bell-slash"></i>
+                    </div>
+                    <p class="text-slate-400 text-sm font-semibold text-center">No notifications received</p>
+                    <p class="text-slate-600 text-xs text-center">You're all caught up! New alerts will appear here.</p>
+                </div>
+                <div class="px-5 pb-5">
+                    <button onclick="toggleNotif()" class="w-full py-2.5 rounded-xl bg-slate-800 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white hover:bg-slate-700 transition">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="toggleLogin()" class="btn-tech bg-white text-black px-8 py-2.5 rounded-full text-xs font-black uppercase tracking-tighter">Login</button>
+    </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="max-w-7xl mx-auto px-6 pt-32 pb-48 text-center relative z-10">
+    <h1 class="text-7xl md:text-9xl font-black mb-8 leading-[0.9] tracking-tight">Focus Better.<br><span class="bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-500 bg-clip-text text-transparent">Achieve More.</span></h1>
+    <p class="text-slate-400 text-xl mb-12 max-w-2xl mx-auto leading-relaxed font-light">Engineered for Computer Science students. Optimize your workflow, master Data Structures, and stay ahead of the curve.</p>
+    <button onclick="toggleLogin()" class="btn-tech bg-blue-600 px-12 py-5 rounded-[2rem] font-black text-lg shadow-2xl shadow-blue-500/40">Start Focusing</button>
+</section>
+
+<!-- ══ MOTIVATION PHOTO SECTION ══ -->
+<section class="max-w-7xl mx-auto px-6 pb-16 relative z-10">
+    <div class="flex flex-col items-center mb-12">
+        <div class="h-1 w-20 bg-indigo-500 mb-5 rounded-full"></div>
+        <h2 class="text-4xl font-black text-center mb-2">Stay <span class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">Inspired</span></h2>
+        <p class="text-slate-500 text-sm">Fuel your focus with the right mindset</p>
+    </div>
+
+    <!-- 6 Photo Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-5 mb-10">
+        <!-- 1 -->
+        <div class="photo-card">
+            <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&auto=format&fit=crop" alt="Study desk with books" loading="lazy">
+            <div class="photo-card-overlay"><span class="text-white font-bold text-sm">📚 Deep Study Mode</span></div>
+        </div>
+        <!-- 2 -->
+        <div class="photo-card">
+            <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&auto=format&fit=crop" alt="Code on laptop" loading="lazy">
+            <div class="photo-card-overlay"><span class="text-white font-bold text-sm">💻 Code Every Day</span></div>
+        </div>
+        <!-- 3 -->
+        <div class="photo-card">
+            <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&auto=format&fit=crop" alt="Person studying" loading="lazy">
+            <div class="photo-card-overlay"><span class="text-white font-bold text-sm">🎯 Stay On Track</span></div>
+        </div>
+        <!-- 4 -->
+        <div class="photo-card">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&auto=format&fit=crop" alt="Group studying" loading="lazy">
+            <div class="photo-card-overlay"><span class="text-white font-bold text-sm">🤝 Collaborate &amp; Grow</span></div>
+        </div>
+        <!-- 5 -->
+        <div class="photo-card">
+            <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&auto=format&fit=crop" alt="Developer workspace" loading="lazy">
+            <div class="photo-card-overlay"><span class="text-white font-bold text-sm">🚀 Build the Future</span></div>
+        </div>
+        <!-- 6 -->
+        <div class="photo-card">
+            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&auto=format&fit=crop" alt="Motivation sunrise" loading="lazy">
+            <div class="photo-card-overlay"><span class="text-white font-bold text-sm">☀️ Rise &amp; Grind</span></div>
+        </div>
+    </div>
+
+    <!-- Scrolling Quote Ticker -->
+    <div class="quote-ticker py-4">
+        <div class="quote-track" id="quoteTicker">
+            <!-- filled by JS, doubled for seamless loop -->
+        </div>
+    </div>
+</section>
+
+<!-- ══ DASHBOARD ══ -->
+<section id="dashboard" class="max-w-7xl mx-auto px-6 py-24 relative z-10">
+    <div class="flex flex-col items-center mb-20">
+        <div class="h-1 w-20 bg-blue-500 mb-6 rounded-full"></div>
+        <h2 id="welcomeText" class="text-5xl font-black text-center">Global Dashboard</h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-10">
+
+        <!-- Timer -->
+        <div class="glass-panel p-10 rounded-[3.5rem] text-center">
+            <p class="text-blue-500 uppercase text-[10px] font-black tracking-[0.3em] mb-6">Focus Pulse</p>
+            <div id="timerDisplay" class="text-7xl font-mono font-bold mb-8 tracking-tighter text-white">25:00</div>
+            <div class="flex bg-slate-900/80 p-3 rounded-2xl border border-slate-700 mb-8 justify-center items-center space-x-4">
+                <input id="timerInput" type="number" value="25" class="w-12 bg-transparent text-white font-bold outline-none text-xl text-center">
+                <button onclick="setTimer()" class="text-[10px] font-black text-blue-400 uppercase">Set</button>
+            </div>
+            <div class="flex space-x-4">
+                <button id="startBtn" onclick="toggleTimer()" class="btn-tech flex-grow bg-blue-600 py-4 rounded-2xl font-black text-sm uppercase">Initialize</button>
+                <button onclick="resetTimer()" class="btn-tech bg-slate-800 px-6 rounded-2xl"><i class="fa-solid fa-power-off"></i></button>
+            </div>
+        </div>
+
+        <!-- ── Activity Bar Graph ── -->
+        <div class="glass-panel p-10 rounded-[3.5rem] md:col-span-2 no-lift">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h3 class="text-2xl font-black mb-1">Activity Stats</h3>
+                    <p class="text-slate-500 text-sm">Tasks completed — last 7 days</p>
+                </div>
+                <div id="weeklyBadge" class="text-green-400 font-bold bg-green-400/10 px-4 py-2 rounded-xl text-xs">+0 this week</div>
+            </div>
+
+            <!-- Chart area -->
+            <div class="flex gap-3 items-end">
+                <!-- Y-axis labels -->
+                <div class="flex flex-col justify-between text-right pr-1" style="height:150px;min-width:22px;">
+                    <span class="text-[10px] text-slate-600 font-bold" id="yTop">5</span>
+                    <span class="text-[10px] text-slate-600 font-bold" id="yMid">3</span>
+                    <span class="text-[10px] text-slate-600 font-bold">0</span>
+                </div>
+                <!-- Bars -->
+                <div class="bar-chart-container" id="barChart"></div>
+            </div>
+
+            <div class="flex items-center gap-2 mt-4">
+                <div class="w-3 h-3 rounded-full" style="background:linear-gradient(135deg,#6366f1,#3b82f6)"></div>
+                <span class="text-xs text-slate-500 font-semibold">Check off tasks to grow today's bar ↑</span>
+                <div class="w-3 h-3 rounded-full ml-4" style="background:linear-gradient(135deg,#f472b6,#6366f1)"></div>
+                <span class="text-xs text-slate-500 font-semibold">Today highlighted</span>
+            </div>
+        </div>
+
+        <!-- Tasks -->
+        <div class="glass-panel p-10 rounded-[3.5rem] md:col-span-2">
+            <h3 id="goalDisplay" class="text-2xl font-black text-indigo-400 mb-8 underline decoration-indigo-500/30 underline-offset-8 italic">Ready to Initialize</h3>
+            <div class="flex space-x-3 mb-8">
+                <input id="taskInput" type="text" placeholder="Add study module..." class="flex-grow bg-slate-900/80 border border-slate-800 rounded-2xl px-6 py-4 outline-none focus:border-indigo-500 transition-all">
+                <button onclick="addTask()" class="btn-tech bg-indigo-600 px-8 rounded-2xl"><i class="fa-solid fa-plus text-xl"></i></button>
+            </div>
+            <div id="taskList" class="space-y-4 max-h-64 overflow-y-auto pr-2"></div>
+        </div>
+
+        <!-- Score -->
+        <div class="glass-panel p-10 rounded-[3.5rem] flex flex-col items-center justify-center">
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-4">Core Efficiency</p>
+            <div id="score" class="text-7xl font-black text-green-400 tracking-tighter">0%</div>
+            <div class="w-full h-3 bg-slate-900/80 rounded-full mt-10 border border-slate-800 overflow-hidden">
+                <div id="scoreBar" class="h-full bg-gradient-to-r from-blue-600 to-green-500 transition-all duration-1000" style="width:0%"></div>
+            </div>
+        </div>
+
+        <!-- ── Study Streak ── -->
+        <div class="md:col-span-3">
+            <div class="streak-panel">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#fb7c1a,#ef4444);">🔥</div>
+                        <div>
+                            <p class="text-xs font-black uppercase tracking-widest text-slate-500">Study Streak</p>
+                            <p id="streakCount" class="text-3xl font-black text-white leading-tight">0 Days</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-black uppercase tracking-widest text-slate-500">Best Streak</p>
+                        <p id="bestStreakCount" class="text-2xl font-black" style="color:#fb7c1a;">0 Days</p>
+                    </div>
+                </div>
+                <div class="flex gap-3" id="streakDays"></div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="bg-slate-950/80 border-t border-slate-900 pt-24 pb-12 relative z-10">
+    <div class="max-w-7xl mx-auto px-8 grid md:grid-cols-3 gap-16 mb-20">
+        <div>
+            <div class="text-2xl font-black mb-6">Focus<span class="text-blue-500">Hub.</span></div>
+            <p class="text-slate-500 text-sm leading-loose">A high-performance productivity interface designed for the 2026 student landscape.</p>
+        </div>
+        <div>
+            <h4 class="text-xs font-black uppercase tracking-widest text-white mb-8">Developer Profile</h4>
+            <div class="space-y-4">
+                <p class="text-blue-400 font-bold text-lg">Ankit Kumar</p>
+                <p class="text-slate-400 text-sm">1st Year CSE Student</p>
+                <p class="text-slate-500 text-xs tracking-wide">Chandigarh University</p>
+            </div>
+        </div>
+        <div>
+            <h4 class="text-xs font-black uppercase tracking-widest text-white mb-8">Connect &amp; Support</h4>
+            <div class="flex space-x-6 text-2xl">
+                <a href="#" class="text-slate-500 hover:text-white transition"><i class="fa-brands fa-github"></i></a>
+                <a href="#" class="text-slate-500 hover:text-blue-400 transition"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a target="_blank" href="https://www.instagram.com/yadavankiit_/" class="text-slate-500 hover:text-pink-400 transition"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+            <p class="text-slate-600 text-[10px] mt-8 uppercase tracking-widest">© 2026 FocusHub Build v4.3</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ─── Modals ─────────────────────────────────────────────────────────────────
+function toggleLogin() {
+    const m = document.getElementById('loginModal');
+    m.classList.contains('modal-hidden') ? m.classList.replace('modal-hidden','modal-show') : m.classList.replace('modal-show','modal-hidden');
+}
+function toggleFeatures() {
+    const m = document.getElementById('featuresModal');
+    m.classList.contains('modal-hidden') ? m.classList.replace('modal-hidden','modal-show') : m.classList.replace('modal-show','modal-hidden');
+}
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+function toggleNotif() {
+    document.getElementById('notifPanel').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+    if (!document.getElementById('notifWrapper').contains(e.target))
+        document.getElementById('notifPanel').classList.remove('open');
+});
+
+// ─── Timer ───────────────────────────────────────────────────────────────────
+let tasks = [], timeLeft = 25*60, timer = null;
+
+function handleLogin() {
+    const name = document.getElementById('userName').value;
+    const goal = document.getElementById('userGoal').value;
+    if (name && goal) {
+        document.getElementById('welcomeText').innerText = name + "'s Hub";
+        document.getElementById('goalDisplay').innerText = goal;
+        toggleLogin();
+        window.location.hash = 'dashboard';
+    }
+}
+function setTimer() {
+    timeLeft = document.getElementById('timerInput').value * 60;
+    updateDisplay();
+}
+function updateDisplay() {
+    const m = Math.floor(timeLeft/60), s = timeLeft%60;
+    document.getElementById('timerDisplay').innerText = `${m}:${s.toString().padStart(2,'0')}`;
+}
+function toggleTimer() {
+    const b = document.getElementById('startBtn');
+    if (timer) { clearInterval(timer); timer=null; b.innerText="Initialize"; }
+    else {
+        b.innerText = "Suspend";
+        timer = setInterval(() => {
+            if (timeLeft > 0) { timeLeft--; updateDisplay(); }
+            else { clearInterval(timer); alert("System Cycle Complete!"); }
+        }, 1000);
+    }
+}
+function resetTimer() {
+    clearInterval(timer); timer=null; setTimer();
+    document.getElementById('startBtn').innerText = "Initialize";
+}
+
+// ─── Tasks ───────────────────────────────────────────────────────────────────
+function addTask() {
+    const val = document.getElementById('taskInput').value.trim();
+    if (!val) return;
+    tasks.push({ text: val, done: false });
+    document.getElementById('taskInput').value = "";
+    renderTasks();
+    recordTodayActivity();
+}
+function renderTasks() {
+    const c = document.getElementById('taskList');
+    c.innerHTML = "";
+    tasks.forEach((t,i) => {
+        c.innerHTML += `
+        <div class="p-5 bg-slate-900/80 rounded-2xl flex items-center border border-slate-800 hover:border-indigo-500/50 transition-all group">
+            <div onclick="toggleTask(${i})" class="flex items-center flex-1 cursor-pointer min-w-0">
+                <input type="checkbox" ${t.done?'checked':''} class="mr-5 accent-indigo-500 h-5 w-5 shrink-0" onclick="event.stopPropagation();toggleTask(${i})">
+                <span class="text-sm font-bold truncate ${t.done?'line-through text-slate-500':'text-slate-200'}">${t.text}</span>
+            </div>
+            <button onclick="deleteTask(${i})" title="Delete task"
+                class="ml-4 shrink-0 w-8 h-8 flex items-center justify-center rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/30 hover:text-red-300 hover:border-red-400/50 hover:scale-110 transition-all duration-200">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+        </div>`;
+    });
+    updateScore();
+}
+function toggleTask(i) {
+    tasks[i].done = !tasks[i].done;
+    renderTasks();
+    recordTodayActivity();
+}
+function deleteTask(i) {
+    tasks.splice(i, 1);
+    renderTasks();
+    recordTodayActivity();
+}
+function updateScore() {
+    const done = tasks.filter(t=>t.done).length;
+    const pct  = tasks.length ? Math.round((done/tasks.length)*100) : 0;
+    document.getElementById('score').innerText     = pct + "%";
+    document.getElementById('scoreBar').style.width = pct + "%";
+}
+
+// ─── Activity Store ──────────────────────────────────────────────────────────
+const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+function todayKey() { return new Date().toISOString().slice(0,10); }
+
+function loadActivity() {
+    try { return JSON.parse(localStorage.getItem('fh_activity')||'{}'); } catch { return {}; }
+}
+function saveActivity(d) {
+    try { localStorage.setItem('fh_activity', JSON.stringify(d)); } catch {}
+}
+
+function recordTodayActivity() {
+    const store = loadActivity();
+    store[todayKey()] = tasks.filter(t=>t.done).length;
+    saveActivity(store);
+    renderBarChart();
+    renderStreak();
+}
+
+function getLast7Days() {
+    const r=[];
+    for (let i=6;i>=0;i--) {
+        const d=new Date(); d.setDate(d.getDate()-i);
+        r.push(d.toISOString().slice(0,10));
+    }
+    return r;
+}
+
+// ─── Bar Chart (FIXED) ───────────────────────────────────────────────────────
+function renderBarChart() {
+    const store  = loadActivity();
+    const days   = getLast7Days();
+    const values = days.map(k => store[k]||0);
+    const maxVal = Math.max(...values, 1);
+
+    document.getElementById('yTop').textContent = maxVal;
+    document.getElementById('yMid').textContent = Math.ceil(maxVal/2);
+    document.getElementById('weeklyBadge').textContent = `+${values.reduce((a,b)=>a+b,0)} this week`;
+
+    const chart = document.getElementById('barChart');
+    chart.innerHTML = '';
+
+    days.forEach((dateKey, idx) => {
+        const val       = values[idx];
+        const targetPct = maxVal > 0 ? (val / maxVal) * 100 : 0;
+        const jsDay     = new Date(dateKey).getDay();
+        const label     = DAY_NAMES[(jsDay+6)%7];
+        const isToday   = (idx === 6);
+
+        const col = document.createElement('div');
+        col.className = 'bar-col';
+
+        // Value label (above bar)
+        const valEl = document.createElement('div');
+        valEl.className = 'bar-val-label';
+        valEl.textContent = val > 0 ? val : '';
+        valEl.style.alignSelf = 'center';
+
+        // The bar itself — starts at 0, animates to target
+        const bar = document.createElement('div');
+        bar.className = 'bar-inner';
+        bar.style.height = '0px';           // start at 0
+        bar.style.width  = '100%';
+        bar.title = `${label}: ${val} task${val!==1?'s':''} done`;
+
+        if (isToday) {
+            bar.style.background  = 'linear-gradient(180deg,#f472b6,#6366f1)';
+            bar.style.boxShadow   = '0 0 20px rgba(99,102,241,0.5)';
+        } else {
+            bar.style.background  = 'linear-gradient(180deg,#6366f1,#3b82f6)';
+        }
+
+        // Day label (below bar)
+        const lbl = document.createElement('div');
+        lbl.className = 'bar-day-label';
+        lbl.textContent = label;
+        if (isToday) lbl.style.color = '#a5b4fc';
+
+        col.appendChild(valEl);
+        col.appendChild(bar);
+        col.appendChild(lbl);
+        chart.appendChild(col);
+
+        // ✅ FIX: Animate height AFTER element is in the DOM
+        // Double rAF ensures the browser has painted the 0-height state first
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                bar.style.height = `${targetPct}%`;
+            });
+        });
+    });
+}
+
+// ─── Streak ──────────────────────────────────────────────────────────────────
+function renderStreak() {
+    const store = loadActivity();
+    const days  = getLast7Days();
+
+    let streak = 0;
+    for (let i=0;;i++) {
+        const d=new Date(); d.setDate(d.getDate()-i);
+        const k=d.toISOString().slice(0,10);
+        if (store[k]>0) streak++; else break;
+    }
+
+    const sorted = Object.keys(store).sort();
+    let best=0, cur=0;
+    sorted.forEach(k => { store[k]>0 ? (cur++, best=Math.max(best,cur)) : (cur=0); });
+
+    document.getElementById('streakCount').textContent     = streak + (streak===1?' Day':' Days');
+    document.getElementById('bestStreakCount').textContent = best   + (best===1?' Day':' Days');
+
+    const c = document.getElementById('streakDays');
+    c.innerHTML = '';
+    days.forEach(dateKey => {
+        const jsDay  = new Date(dateKey).getDay();
+        const label  = DAY_NAMES[(jsDay+6)%7];
+        const active = (store[dateKey]||0) > 0;
+
+        const wrap = document.createElement('div');
+        Object.assign(wrap.style, {flex:'1',display:'flex',flexDirection:'column',alignItems:'center',gap:'6px'});
+
+        const lbl = document.createElement('div');
+        lbl.className = 'streak-day-label';
+        lbl.textContent = label;
+
+        const pill = document.createElement('div');
+        pill.className = 'streak-day ' + (active ? 'active' : 'inactive');
+
+        wrap.appendChild(lbl);
+        wrap.appendChild(pill);
+        c.appendChild(wrap);
+    });
+}
+
+// ─── Quote Ticker ─────────────────────────────────────────────────────────────
+const quotes = [
+    { text: "The secret of getting ahead is getting started.", by: "Mark Twain" },
+    { text: "It always seems impossible until it's done.", by: "Nelson Mandela" },
+    { text: "Code is like humour. When you have to explain it, it's bad.", by: "Cory House" },
+    { text: "First, solve the problem. Then, write the code.", by: "John Johnson" },
+    { text: "Learning never exhausts the mind.", by: "Leonardo da Vinci" },
+    { text: "Success is the sum of small efforts, repeated day in and day out.", by: "R. Collier" },
+    { text: "The expert in anything was once a beginner.", by: "Helen Hayes" },
+    { text: "Push yourself, because no one else is going to do it for you.", by: "" },
+    { text: "Great things never come from comfort zones.", by: "" },
+    { text: "Dream it. Wish it. Do it.", by: "" },
+    { text: "Stay hungry, stay foolish.", by: "Steve Jobs" },
+    { text: "Any fool can write code that a computer can understand.", by: "Martin Fowler" },
+];
+
+function buildTicker() {
+    const track = document.getElementById('quoteTicker');
+    // Duplicate for seamless loop
+    [...quotes, ...quotes].forEach(q => {
+        const pill = document.createElement('div');
+        pill.className = 'quote-pill';
+        pill.innerHTML = `"${q.text}"${q.by ? `<span>— ${q.by}</span>` : ''}`;
+        track.appendChild(pill);
+    });
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+buildTicker();
+renderBarChart();
+renderStreak();
+</script>
+</body>
+</html>

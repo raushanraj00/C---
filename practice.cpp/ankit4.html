@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" class="animated-bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusHub | Student Focus Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; margin: 0; color: #f1f5f9; }
+
+        /* Fix for Live Animation */
+        .animated-bg {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #020617);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-card { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            transition: transform 0.3s ease, border 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        /* High-Fade Button Animations */
+        .btn-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-hover:hover {
+            opacity: 0.75; /* Low fade */
+            transform: scale(1.05); /* High scale */
+            filter: brightness(1.2);
+        }
+
+        /* Modal Visibility */
+        .modal-hidden { display: none; }
+        .modal-show { display: flex; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="featuresModal" class="fixed inset-0 bg-black/80 z-[60] modal-hidden items-center justify-center p-6">
+        <div class="glass-card max-w-2xl w-full p-8 rounded-[2.5rem] relative">
+            <button onclick="toggleFeatures()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition text-2xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 class="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">App Features</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <h4 class="font-bold text-blue-400 mb-1"><i class="fa-solid fa-clock mr-2"></i>Smart Timer</h4>
+                    <p class="text-xs text-slate-400">Customizable Pomodoro blocks to maximize your attention span.</p>
+                </div>
+                <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <h4 class="font-bold text-purple-400 mb-1"><i class="fa-solid fa-chart-line mr-2"></i>Study Analytics</h4>
+                    <p class="text-xs text-slate-400">Visual charts to track daily hours and productivity scores.</p>
+                </div>
+                <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <h4 class="font-bold text-orange-400 mb-1"><i class="fa-solid fa-fire mr-2"></i>Streak System</h4>
+                    <p class="text-xs text-slate-400">Gamified daily logs to keep you consistent with your goals.</p>
+                </div>
+                <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <h4 class="font-bold text-green-400 mb-1"><i class="fa-solid fa-list-check mr-2"></i>Task Manager</h4>
+                    <p class="text-xs text-slate-400">Interactive to-do lists that calculate your efficiency real-time.</p>
+                </div>
+            </div>
+            <button onclick="toggleFeatures()" class="btn-hover mt-8 w-full bg-slate-800 py-3 rounded-xl font-bold">Back to Home</button>
+        </div>
+    </div>
+
+    <div id="loginModal" class="fixed inset-0 bg-black/80 z-[60] modal-hidden items-center justify-center p-6">
+        <div class="glass-card max-w-sm w-full p-8 rounded-[2.5rem] relative border-blue-500/30">
+            <button onclick="toggleLogin()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition text-2xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 class="text-2xl font-black mb-6 text-white text-center">Student Access</h2>
+            <div class="space-y-4">
+                <input id="userName" type="text" placeholder="Full Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 outline-none focus:border-blue-500">
+                <input id="userGoal" type="text" placeholder="Today's Primary Goal" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 outline-none focus:border-blue-500">
+                <button onclick="handleLogin()" class="btn-hover w-full bg-blue-600 py-4 rounded-xl font-bold shadow-lg shadow-blue-500/20">Submit & Launch</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="flex justify-between items-center p-6 max-w-7xl mx-auto relative z-50">
+        <div class="text-2xl font-black tracking-tighter text-white">Focus<span class="text-blue-500">Hub.</span></div>
+        <div class="flex space-x-6 items-center">
+            <button onclick="toggleFeatures()" class="text-sm font-medium hover:text-blue-400 transition btn-hover">Features</button>
+            <a href="#dashboard" class="text-sm font-medium hover:text-blue-400 transition btn-hover">Dashboard</a>
+            <button onclick="toggleLogin()" class="btn-hover bg-blue-600 px-6 py-2 rounded-full text-xs font-black uppercase">Login</button>
+        </div>
+    </nav>
+
+    <section class="max-w-7xl mx-auto px-6 pt-20 pb-32 text-center relative z-10">
+        <h1 class="text-6xl md:text-8xl font-black mb-6 leading-none">Focus Better.<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Achieve More.</span></h1>
+        <p class="text-slate-400 text-lg mb-10 max-w-xl mx-auto">Design Thinking for productive students. Manage your daily CSE tasks with a focused mindset.</p>
+        <div class="flex justify-center space-x-4">
+            <button onclick="toggleLogin()" class="btn-hover bg-purple-600 px-10 py-4 rounded-2xl font-bold shadow-2xl shadow-purple-500/30">Start Focusing</button>
+        </div>
+    </section>
+
+    <section id="dashboard" class="max-w-7xl mx-auto px-6 pb-20 relative z-10">
+        <h2 id="welcomeText" class="text-center text-4xl font-black mb-16 tracking-tight">Main Dashboard</h2>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="glass-card p-8 rounded-[3rem] text-center">
+                <p class="text-slate-500 uppercase text-[10px] font-bold tracking-widest mb-4">Countdown Timer</p>
+                <div id="timerDisplay" class="text-6xl font-mono font-bold mb-6">25:00</div>
+                <div class="flex bg-slate-900/50 p-2 rounded-2xl border border-slate-700 mb-6 justify-center space-x-3">
+                    <input id="timerInput" type="number" value="25" class="w-12 bg-transparent text-blue-400 font-bold outline-none text-center">
+                    <button onclick="setTimer()" class="text-[10px] font-bold text-slate-400 hover:text-white uppercase transition">Update</button>
+                </div>
+                <div class="flex space-x-3">
+                    <button id="startBtn" onclick="toggleTimer()" class="btn-hover flex-grow bg-blue-600 py-3 rounded-2xl font-bold text-sm">Start</button>
+                    <button onclick="resetTimer()" class="btn-hover bg-slate-800 px-6 rounded-2xl"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 rounded-[3rem] md:col-span-2">
+                <div class="flex justify-between items-center mb-10">
+                    <h3 class="text-xl font-bold">Study Sessions</h3>
+                    <div class="text-green-400 text-xs font-bold">+12% Progress</div>
+                </div>
+                <div class="flex items-end space-x-3 h-32">
+                    <div class="bg-slate-800 w-full h-1/2 rounded-t-2xl"></div>
+                    <div class="bg-slate-800 w-full h-3/4 rounded-t-2xl"></div>
+                    <div class="bg-blue-600 w-full h-full rounded-t-2xl shadow-lg shadow-blue-500/40"></div>
+                    <div class="bg-slate-800 w-full h-2/3 rounded-t-2xl"></div>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 rounded-[3rem] md:col-span-2">
+                <h3 id="goalDisplay" class="text-xl font-bold text-purple-400 mb-6 italic">No Task Set</h3>
+                <div class="flex space-x-2 mb-6">
+                    <input id="taskInput" type="text" placeholder="Add specific task..." class="flex-grow bg-slate-900 border border-slate-700 rounded-2xl px-5 py-3 outline-none focus:border-purple-500">
+                    <button onclick="addTask()" class="btn-hover bg-purple-600 px-6 rounded-2xl font-bold"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div id="taskList" class="space-y-3 max-h-48 overflow-y-auto"></div>
+            </div>
+
+            <div class="glass-card p-8 rounded-[3rem] flex flex-col items-center justify-center">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Efficiency</p>
+                <div id="score" class="text-6xl font-black text-green-400">0%</div>
+                <div class="w-full h-2 bg-slate-800 rounded-full mt-6">
+                    <div id="scoreBar" class="h-full bg-green-500 rounded-full transition-all duration-700" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center p-20 border-t border-slate-900 bg-slate-950/20">
+        <p class="text-sm text-slate-500">Developed by <span class="text-white font-bold">CSE Student</span> @ Chandigarh University</p>
+    </footer>
+
+    <script>
+        // Modal Toggles
+        function toggleLogin() { 
+            const m = document.getElementById('loginModal');
+            m.classList.contains('modal-hidden') ? m.classList.replace('modal-hidden', 'modal-show') : m.classList.replace('modal-show', 'modal-hidden');
+        }
+        function toggleFeatures() {
+            const m = document.getElementById('featuresModal');
+            m.classList.contains('modal-hidden') ? m.classList.replace('modal-hidden', 'modal-show') : m.classList.replace('modal-show', 'modal-hidden');
+        }
+
+        // State & Logic
+        let tasks = [];
+        let timeLeft = 25 * 60;
+        let timer = null;
+
+        function handleLogin() {
+            const name = document.getElementById('userName').value;
+            const goal = document.getElementById('userGoal').value;
+            if (name && goal) {
+                document.getElementById('welcomeText').innerText = name + "'s Hub";
+                document.getElementById('goalDisplay').innerText = "Goal: " + goal;
+                toggleLogin();
+                window.location.hash = 'dashboard';
+            }
+        }
+
+        function setTimer() {
+            timeLeft = document.getElementById('timerInput').value * 60;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function toggleTimer() {
+            const b = document.getElementById('startBtn');
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+                b.innerText = "Start";
+            } else {
+                b.innerText = "Pause";
+                timer = setInterval(() => {
+                    if (timeLeft > 0) { timeLeft--; updateDisplay(); }
+                    else { clearInterval(timer); alert("Done!"); }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timer = null;
+            setTimer();
+            document.getElementById('startBtn').innerText = "Start";
+        }
+
+        function addTask() {
+            const val = document.getElementById('taskInput').value;
+            if (val) {
+                tasks.push({ text: val, done: false });
+                document.getElementById('taskInput').value = "";
+                renderTasks();
+            }
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('taskList');
+            container.innerHTML = "";
+            tasks.forEach((t, i) => {
+                container.innerHTML += `
+                    <div onclick="toggleTask(${i})" class="btn-hover p-4 bg-slate-900/50 rounded-2xl flex items-center cursor-pointer border border-slate-800">
+                        <input type="checkbox" ${t.done ? 'checked' : ''} class="mr-4 accent-blue-500">
+                        <span class="text-sm ${t.done ? 'line-through text-slate-500' : ''}">${t.text}</span>
+                    </div>`;
+            });
+            updateScore();
+        }
+
+        function toggleTask(i) {
+            tasks[i].done = !tasks[i].done;
+            renderTasks();
+        }
+
+        function updateScore() {
+            const done = tasks.filter(t => t.done).length;
+            const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+            document.getElementById('score').innerText = pct + "%";
+            document.getElementById('scoreBar').style.width = pct + "%";
+        }
+    </script>
+</body>
+</html>

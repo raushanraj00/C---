@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusHub | Student Productivity & Focus Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            scroll-behavior: smooth;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Live Animated Background */
+        .animated-bg {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Styles */
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.5); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(96, 165, 250, 0.4);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3);
+        }
+
+        /* Fade Animations for Buttons */
+        .btn-animate {
+            transition: all 0.3s ease;
+        }
+        .btn-animate:hover {
+            opacity: 0.85;
+            transform: scale(1.03);
+            filter: brightness(1.2);
+        }
+        .btn-animate:active {
+            transform: scale(0.97);
+            opacity: 0.7;
+        }
+
+        .modal-active { display: flex !important; }
+        .task-checkbox:checked + span { text-decoration: line-through; color: #94a3b8; }
+    </style>
+</head>
+<body class="animated-bg text-slate-200">
+
+    <div id="loginModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+        <div class="glass-card p-8 rounded-3xl max-w-sm w-full border-blue-500/50">
+            <h2 class="text-2xl font-bold mb-4 text-white">Welcome Student</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1">Your Name</label>
+                    <input id="userNameInput" type="text" placeholder="e.g. Alex" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 outline-none focus:border-blue-500 text-white transition">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1">Main Study Goal</label>
+                    <input id="userGoalInput" type="text" placeholder="e.g. Master React" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 outline-none focus:border-blue-500 text-white transition">
+                </div>
+                <button onclick="handleLogin()" class="btn-animate w-full bg-blue-600 py-3 rounded-xl font-bold shadow-lg shadow-blue-500/20">Enter Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="flex justify-between items-center p-6 max-w-7xl mx-auto relative z-10">
+        <div class="text-2xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">FocusHub</div>
+        <div class="hidden md:flex space-x-8 text-sm font-medium">
+            <a href="#features" class="hover:text-blue-400 transition-colors">Features</a>
+            <a href="#dashboard" class="hover:text-blue-400 transition-colors">Dashboard</a>
+        </div>
+        <button onclick="toggleModal()" class="btn-animate bg-blue-600/20 text-blue-400 border border-blue-500/50 px-6 py-2 rounded-full text-sm font-bold">Login</button>
+    </nav>
+
+    <section class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center relative z-10">
+        <div>
+            <h1 class="text-5xl md:text-7xl font-black leading-tight mb-6">Focus Better.<br><span class="text-blue-500">Achieve More.</span></h1>
+            <p class="text-slate-400 text-lg mb-8 max-w-md">The ultimate workspace for students at Chandigarh University to manage tasks and crush exams.</p>
+            <div class="flex space-x-4">
+                <a href="#dashboard" class="btn-animate bg-purple-600 px-8 py-3 rounded-xl font-bold shadow-xl shadow-purple-500/20">Start Focusing</a>
+                <button onclick="alert('Demo Mode Active!')" class="btn-animate border border-slate-700 bg-slate-800/30 px-8 py-3 rounded-xl font-bold">Try Demo</button>
+            </div>
+        </div>
+        <div class="flex justify-center">
+            <img src="https://illustrations.popsy.co/white/student-going-to-school.svg" alt="Studying" class="w-96 drop-shadow-2xl">
+        </div>
+    </section>
+
+    <section id="dashboard" class="max-w-7xl mx-auto px-6 py-20 relative z-10">
+        <h2 id="welcomeMsg" class="text-center text-4xl font-bold mb-16">Global Dashboard</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass-card p-8 rounded-[2rem] text-center">
+                <p class="text-slate-400 uppercase text-xs tracking-widest mb-4">Deep Work Timer</p>
+                <div id="timerDisplay" class="text-6xl font-mono font-bold text-white mb-6">25:00</div>
+                
+                <div class="flex items-center justify-center space-x-3 mb-8 bg-slate-900/40 p-2 rounded-xl border border-slate-700">
+                    <input id="timerLimitInput" type="number" value="25" min="1" class="w-12 bg-transparent text-center font-bold text-blue-400 outline-none">
+                    <span class="text-slate-500 text-xs">MINS</span>
+                    <button onclick="setCustomTime()" class="text-[10px] bg-blue-500/20 px-2 py-1 rounded hover:bg-blue-500/40 transition">UPDATE</button>
+                </div>
+
+                <div class="flex justify-center space-x-3">
+                    <button id="startTimerBtn" onclick="toggleTimer()" class="btn-animate bg-blue-600 px-6 py-2.5 rounded-xl font-bold text-sm">▶ Start</button>
+                    <button onclick="resetTimer()" class="btn-animate bg-slate-700 px-6 py-2.5 rounded-xl font-bold text-sm">↺ Reset</button>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 rounded-[2rem] md:col-span-2">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="font-bold text-xl">Weekly Study Hours</h3>
+                    <div class="bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-xs font-bold">+12% vs Last Week</div>
+                </div>
+                <div class="flex items-end space-x-3 h-40">
+                    <div class="bg-slate-700/50 hover:bg-blue-500/50 w-full h-1/2 rounded-t-xl transition-all"></div>
+                    <div class="bg-slate-700/50 hover:bg-blue-500/50 w-full h-3/4 rounded-t-xl transition-all"></div>
+                    <div class="bg-blue-600 w-full h-full rounded-t-xl shadow-lg shadow-blue-500/20"></div>
+                    <div class="bg-slate-700/50 hover:bg-blue-500/50 w-full h-2/3 rounded-t-xl transition-all"></div>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 rounded-[2rem] md:col-span-2">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-xl text-purple-400" id="dbGoalLabel">Focus Session</h3>
+                    <span class="text-slate-500 text-xs uppercase" id="taskCountLabel">0 Tasks</span>
+                </div>
+                
+                <div class="flex mb-6 space-x-2">
+                    <input id="taskInput" type="text" placeholder="Add a new task..." class="flex-grow bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-purple-500 transition">
+                    <button onclick="addTask()" class="btn-animate bg-purple-600 px-6 rounded-xl font-bold"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                
+                <div id="taskList" class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                    </div>
+            </div>
+
+            <div class="glass-card p-8 rounded-[2rem] flex flex-col justify-center items-center">
+                <p class="text-slate-400 text-xs uppercase tracking-widest mb-2">Efficiency</p>
+                <div id="scoreDisplay" class="text-6xl font-black text-green-400 transition-all duration-700">0%</div>
+                <div class="w-full bg-slate-900 rounded-full h-3 mt-6 border border-slate-700">
+                    <div id="scoreProgressBar" class="bg-gradient-to-r from-blue-500 to-green-400 h-full rounded-full transition-all duration-700" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 rounded-[2rem] md:col-span-3">
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-orange-500/20 rounded-2xl flex items-center justify-center border border-orange-500/30">
+                            <i class="fa-solid fa-fire text-orange-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-xs">Current Streak</p>
+                            <h4 class="text-2xl font-bold text-white">7 Days</h4>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-slate-500 text-xs uppercase">Best</p>
+                        <p class="text-orange-400 font-black">14 DAYS</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-7 gap-2 h-10">
+                    <div class="bg-orange-500 rounded-lg"></div>
+                    <div class="bg-orange-500 rounded-lg"></div>
+                    <div class="bg-orange-500 rounded-lg"></div>
+                    <div class="bg-orange-500 rounded-lg"></div>
+                    <div class="bg-orange-500 rounded-lg opacity-50"></div>
+                    <div class="bg-slate-800 rounded-lg border border-slate-700"></div>
+                    <div class="bg-slate-800 rounded-lg border border-slate-700"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900/80 border-t border-slate-800 py-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
+            <div>
+                <h4 class="text-xl font-bold text-white mb-4">FocusHub</h4>
+                <p class="text-slate-400 text-sm leading-relaxed">Built for students who want to build a better future through disciplined study habits.</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 text-blue-400">Developer</h4>
+                <p class="text-slate-200 text-sm">CSE Student</p>
+                <p class="text-slate-500 text-xs">Chandigarh University, 2026</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 text-purple-400">Socials</h4>
+                <div class="flex space-x-4">
+                    <a href="#" class="btn-animate text-slate-400 hover:text-white"><i class="fa-brands fa-github text-xl"></i></a>
+                    <a href="#" class="btn-animate text-slate-400 hover:text-white"><i class="fa-brands fa-linkedin text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // State
+        let tasks = [];
+        let timeLeft = 25 * 60;
+        let timerInterval = null;
+
+        // Login Logic
+        function toggleModal() { document.getElementById('loginModal').classList.toggle('modal-active'); }
+        
+        function handleLogin() {
+            const name = document.getElementById('userNameInput').value;
+            const goal = document.getElementById('userGoalInput').value;
+            if (name && goal) {
+                document.getElementById('welcomeMsg').innerText = `Welcome, ${name}`;
+                document.getElementById('dbGoalLabel').innerText = goal;
+                toggleModal();
+                window.location.hash = "dashboard";
+            }
+        }
+
+        // Timer Logic
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function setCustomTime() {
+            const customMins = document.getElementById('timerLimitInput').value;
+            if (customMins > 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                document.getElementById('startTimerBtn').innerText = "▶ Start";
+                timeLeft = customMins * 60;
+                updateTimerDisplay();
+            }
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('startTimerBtn');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                btn.innerText = "▶ Start";
+            } else {
+                btn.innerText = "⏸ Pause";
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        btn.innerText = "▶ Start";
+                        alert("Session complete!");
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            const limit = document.getElementById('timerLimitInput').value;
+            timeLeft = limit * 60;
+            updateTimerDisplay();
+            document.getElementById('startTimerBtn').innerText = "▶ Start";
+        }
+
+        // Task Logic
+        function addTask() {
+            const val = document.getElementById('taskInput').value;
+            if (val) {
+                tasks.push({ text: val, checked: false });
+                document.getElementById('taskInput').value = "";
+                renderTasks();
+            }
+        }
+
+        function toggleTask(i) {
+            tasks[i].checked = !tasks[i].checked;
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = "";
+            tasks.forEach((t, i) => {
+                list.innerHTML += `
+                    <div onclick="toggleTask(${i})" class="btn-animate flex items-center p-4 glass-card rounded-2xl cursor-pointer">
+                        <input type="checkbox" ${t.checked ? 'checked' : ''} class="task-checkbox mr-4 accent-purple-500">
+                        <span class="text-sm font-medium ${t.checked ? 'line-through text-slate-500' : ''}">${t.text}</span>
+                    </div>
+                `;
+            });
+            updateScore();
+        }
+
+        function updateScore() {
+            const completed = tasks.filter(t => t.checked).length;
+            const pct = tasks.length ? Math.round((completed / tasks.length) * 100) : 0;
+            document.getElementById('scoreDisplay').innerText = pct + "%";
+            document.getElementById('scoreProgressBar').style.width = pct + "%";
+            document.getElementById('taskCountLabel').innerText = `${tasks.length} Tasks`;
+        }
+    </script>
+</body>
+</html>

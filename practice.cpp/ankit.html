@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusHub | Student Productivity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        .modal-active { display: flex !important; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200">
+
+    <div id="loginModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+        <div class="glass-card p-8 rounded-3xl max-w-sm w-full border-blue-500/50">
+            <h2 class="text-2xl font-bold mb-4 text-white">Welcome Student</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1">Your Name</label>
+                    <input id="userName" type="text" placeholder="e.g. Alex" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1">Current Study Goal</label>
+                    <input id="userGoal" type="text" placeholder="e.g. Master C++" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 text-white">
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-bold transition">Submit & Enter Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="flex justify-between items-center p-6 max-w-7xl mx-auto">
+        <div class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">FocusHub</div>
+        <div class="hidden md:flex space-x-8 text-sm font-medium">
+            <a href="#features" class="hover:text-blue-400 transition">Features</a>
+            <a href="#dashboard" class="hover:text-blue-400 transition">Dashboard</a>
+        </div>
+        <button onclick="toggleModal()" class="bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-full text-sm font-bold transition">Login</button>
+    </nav>
+
+    <section class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
+        <div>
+            <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">Focus Better.<br><span class="text-blue-500">Achieve More.</span></h1>
+            <p class="text-slate-400 text-lg mb-8 max-w-md">Track your study time, manage tasks, and build productive habits.</p>
+            <div class="flex space-x-4">
+                <a href="#dashboard" class="bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-xl font-bold shadow-lg transition-all">Start Focusing</a>
+                <button onclick="alert('Demo Mode: Try the Dashboard below!')" class="border border-slate-700 hover:bg-slate-800 px-8 py-3 rounded-xl font-bold transition">Try Demo</button>
+            </div>
+        </div>
+        <div class="relative flex justify-center">
+            <img src="https://illustrations.popsy.co/white/student-going-to-school.svg" alt="Studying" class="w-80 relative z-10">
+        </div>
+    </section>
+
+    <section id="dashboard" class="max-w-7xl mx-auto px-6 py-20">
+        <h2 id="welcomeMsg" class="text-center text-3xl font-bold mb-12">General Dashboard</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-card p-6 rounded-3xl text-center">
+                <p class="text-slate-400 uppercase text-xs tracking-widest mb-4">Focus Timer</p>
+                <div id="timerDisplay" class="text-5xl font-mono font-bold text-white mb-4">25:00</div>
+                <div class="flex justify-center space-x-2">
+                    <button id="startBtn" onclick="toggleTimer()" class="bg-blue-500/20 text-blue-400 px-4 py-2 rounded-lg hover:bg-blue-500/40 transition">▶ Start</button>
+                    <button onclick="resetTimer()" class="bg-slate-700 px-4 py-2 rounded-lg hover:bg-slate-600 transition">↺ Reset</button>
+                </div>
+            </div>
+            
+            <div class="glass-card p-6 rounded-3xl md:col-span-2">
+                <h3 class="font-bold text-lg mb-4">Study Progress: <span id="goalLabel" class="text-purple-400">Not Set</span></h3>
+                <div class="flex items-end space-x-2 h-32">
+                    <div class="bg-slate-700 w-full h-1/2 rounded-t-md"></div>
+                    <div class="bg-slate-700 w-full h-3/4 rounded-t-md"></div>
+                    <div class="bg-blue-500 w-full h-full rounded-t-md"></div>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl">
+                <h3 class="font-bold mb-4">Tasks</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3 bg-slate-800/50 p-3 rounded-xl">
+                        <input type="checkbox" class="accent-purple-500">
+                        <span class="text-sm">Complete Assignment</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900/50 border-t border-slate-800 pt-16 pb-8 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+            <div>
+                <h3 class="text-xl font-bold text-white mb-4">FocusHub</h3>
+                <p class="text-slate-400 text-sm">Building tools for the next generation of engineers and creators.</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Developer</h4>
+                <p class="text-slate-300 text-sm font-medium">Your Name / CSE Student</p>
+                <p class="text-slate-500 text-xs">Chandigarh University</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Connect</h4>
+                <div class="flex space-x-4 text-xl">
+                    <a href="#" class="text-slate-400 hover:text-blue-500 transition"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-blue-400 transition"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center text-slate-600 text-xs border-t border-slate-800/50 pt-8">
+            &copy; 2026 Developed with ❤️ for Students.
+        </div>
+    </footer>
+
+    <script>
+        // Timer Logic
+        let timeLeft = 25 * 60;
+        let timerInterval = null;
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('startBtn');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                btn.innerText = "▶ Start";
+            } else {
+                btn.innerText = "⏸ Pause";
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        alert("Time is up! Take a break.");
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timeLeft = 25 * 60;
+            updateTimerDisplay();
+            document.getElementById('startBtn').innerText = "▶ Start";
+        }
+
+        // Login Modal Logic
+        function toggleModal() {
+            document.getElementById('loginModal').classList.toggle('modal-active');
+        }
+
+        function handleLogin() {
+            const name = document.getElementById('userName').value;
+            const goal = document.getElementById('userGoal').value;
+
+            if (name && goal) {
+                document.getElementById('welcomeMsg').innerText = `Welcome, ${name}'s Workspace`;
+                document.getElementById('goalLabel').innerText = goal;
+                toggleModal();
+                window.location.hash = "dashboard"; // Smooth scroll
+            } else {
+                alert("Please fill in both fields!");
+            }
+        }
+    </script>
+</body>
+</html>

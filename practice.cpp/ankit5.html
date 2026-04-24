@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" class="tech-bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusHub | CSE Productivity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; color: #e2e8f0; overflow-x: hidden; }
+
+        /* Tech-Theme Animated Background */
+        .tech-bg {
+            background: linear-gradient(-45deg, #020617, #0f172a, #1e1b4b, #312e81);
+            background-size: 400% 400%;
+            animation: techFlow 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes techFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Refined */
+        .glass-panel { 
+            background: rgba(15, 23, 42, 0.4); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            transition: all 0.4s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(15, 23, 42, 0.6);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* High-Fade & Glow Buttons */
+        .btn-tech {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-tech:hover {
+            opacity: 0.8;
+            transform: scale(1.04);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .modal-hidden { display: none; }
+        .modal-show { display: flex; animation: slideUp 0.4s ease-out; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="featuresModal" class="fixed inset-0 bg-black/90 z-[100] modal-hidden items-center justify-center p-6">
+        <div class="glass-panel max-w-2xl w-full p-10 rounded-[2.5rem] relative">
+            <button onclick="toggleFeatures()" class="absolute top-8 right-8 text-slate-500 hover:text-white text-3xl">
+                <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+            <h2 class="text-3xl font-extrabold mb-8 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">System Capabilities</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                    <h4 class="font-bold text-blue-400 mb-2"><i class="fa-solid fa-microchip mr-2"></i>CSE Core Timer</h4>
+                    <p class="text-sm text-slate-400">Programmable focus cycles for deep programming sessions.</p>
+                </div>
+                <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                    <h4 class="font-bold text-indigo-400 mb-2"><i class="fa-solid fa-database mr-2"></i>Task Persistence</h4>
+                    <p class="text-sm text-slate-400">Manage task arrays and track completion logic in real-time.</p>
+                </div>
+            </div>
+            <button onclick="toggleFeatures()" class="btn-tech mt-8 w-full bg-slate-800 py-4 rounded-xl font-bold uppercase tracking-widest text-xs">Close Protocol</button>
+        </div>
+    </div>
+
+    <div id="loginModal" class="fixed inset-0 bg-black/90 z-[100] modal-hidden items-center justify-center p-6">
+        <div class="glass-panel max-w-sm w-full p-10 rounded-[3rem] relative">
+            <button onclick="toggleLogin()" class="absolute top-8 right-8 text-slate-500 hover:text-white text-2xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 class="text-2xl font-black mb-8 text-white text-center">User Identification</h2>
+            <div class="space-y-5">
+                <input id="userName" type="text" placeholder="Student Name" class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 outline-none focus:border-blue-500 text-white">
+                <input id="userGoal" type="text" placeholder="Session Objective" class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 outline-none focus:border-blue-500 text-white">
+                <button onclick="handleLogin()" class="btn-tech w-full bg-gradient-to-r from-blue-600 to-indigo-600 py-4 rounded-2xl font-bold shadow-xl">Initialize Hub</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="flex justify-between items-center p-8 max-w-7xl mx-auto relative z-50">
+        <div class="text-3xl font-black tracking-tighter bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+            Focus<span class="text-blue-500">Hub.</span>
+        </div>
+        <div class="flex space-x-8 items-center">
+            <button onclick="toggleFeatures()" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition">Features</button>
+            <a href="#dashboard" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition">Dashboard</a>
+            <button onclick="toggleLogin()" class="btn-tech bg-white text-black px-8 py-2.5 rounded-full text-xs font-black uppercase tracking-tighter">Login</button>
+        </div>
+    </nav>
+
+    <section class="max-w-7xl mx-auto px-6 pt-32 pb-48 text-center relative z-10">
+        <h1 class="text-7xl md:text-9xl font-black mb-8 leading-[0.9] tracking-tight">Focus Better.<br><span class="bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-500 bg-clip-text text-transparent">Achieve More.</span></h1>
+        <p class="text-slate-400 text-xl mb-12 max-w-2xl mx-auto leading-relaxed font-light">Engineered for Computer Science students. Optimize your workflow, master Data Structures, and stay ahead of the curve.</p>
+        <button onclick="toggleLogin()" class="btn-tech bg-blue-600 px-12 py-5 rounded-[2rem] font-black text-lg shadow-2xl shadow-blue-500/40">Start Focusing</button>
+    </section>
+
+    <section id="dashboard" class="max-w-7xl mx-auto px-6 py-24 relative z-10">
+        <div class="flex flex-col items-center mb-20">
+            <div class="h-1 w-20 bg-blue-500 mb-6 rounded-full"></div>
+            <h2 id="welcomeText" class="text-5xl font-black text-center">Global Dashboard</h2>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-10">
+            <div class="glass-panel p-10 rounded-[3.5rem] text-center border-blue-500/20">
+                <p class="text-blue-500 uppercase text-[10px] font-black tracking-[0.3em] mb-6">Focus Pulse</p>
+                <div id="timerDisplay" class="text-7xl font-mono font-bold mb-8 tracking-tighter text-white">25:00</div>
+                
+                <div class="flex bg-slate-900/80 p-3 rounded-2xl border border-slate-700 mb-8 justify-center items-center space-x-4">
+                    <input id="timerInput" type="number" value="25" class="w-12 bg-transparent text-white font-bold outline-none text-xl text-center">
+                    <button onclick="setTimer()" class="text-[10px] font-black text-blue-400 uppercase">Set</button>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button id="startBtn" onclick="toggleTimer()" class="btn-tech flex-grow bg-blue-600 py-4 rounded-2xl font-black text-sm uppercase">Initialize</button>
+                    <button onclick="resetTimer()" class="btn-tech bg-slate-800 px-6 rounded-2xl"><i class="fa-solid fa-power-off"></i></button>
+                </div>
+            </div>
+
+            <div class="glass-panel p-10 rounded-[3.5rem] md:col-span-2">
+                <div class="flex justify-between items-start mb-12">
+                    <div>
+                        <h3 class="text-2xl font-black mb-1">Weekly Output</h3>
+                        <p class="text-slate-500 text-sm">CSE Department Benchmarks</p>
+                    </div>
+                    <div class="text-green-400 font-bold bg-green-400/10 px-4 py-2 rounded-xl text-xs">+12.5%</div>
+                </div>
+                <div class="flex items-end space-x-4 h-40">
+                    <div class="bg-slate-800/50 w-full h-[40%] rounded-2xl hover:bg-blue-500/40 transition-all"></div>
+                    <div class="bg-slate-800/50 w-full h-[70%] rounded-2xl hover:bg-blue-500/40 transition-all"></div>
+                    <div class="bg-gradient-to-t from-blue-700 to-blue-400 w-full h-[100%] rounded-2xl shadow-xl shadow-blue-500/20"></div>
+                    <div class="bg-slate-800/50 w-full h-[55%] rounded-2xl hover:bg-blue-500/40 transition-all"></div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-10 rounded-[3.5rem] md:col-span-2">
+                <h3 id="goalDisplay" class="text-2xl font-black text-indigo-400 mb-8 underline decoration-indigo-500/30 underline-offset-8 italic">Ready to Initialize</h3>
+                <div class="flex space-x-3 mb-8">
+                    <input id="taskInput" type="text" placeholder="Add study module..." class="flex-grow bg-slate-900/80 border border-slate-800 rounded-2xl px-6 py-4 outline-none focus:border-indigo-500 transition-all">
+                    <button onclick="addTask()" class="btn-tech bg-indigo-600 px-8 rounded-2xl"><i class="fa-solid fa-plus text-xl"></i></button>
+                </div>
+                <div id="taskList" class="space-y-4 max-h-64 overflow-y-auto pr-2"></div>
+            </div>
+
+            <div class="glass-panel p-10 rounded-[3.5rem] flex flex-col items-center justify-center border-green-500/20">
+                <p class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-4">Core Efficiency</p>
+                <div id="score" class="text-7xl font-black text-green-400 tracking-tighter">0%</div>
+                <div class="w-full h-3 bg-slate-900/80 rounded-full mt-10 border border-slate-800 overflow-hidden">
+                    <div id="scoreBar" class="h-full bg-gradient-to-r from-blue-600 to-green-500 transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-950/80 border-t border-slate-900 pt-24 pb-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-8 grid md:grid-cols-3 gap-16 mb-20">
+            <div>
+                <div class="text-2xl font-black mb-6">Focus<span class="text-blue-500">Hub.</span></div>
+                <p class="text-slate-500 text-sm leading-loose">A high-performance productivity interface designed for the 2026 student landscape. Manage focus, track progress, and dominate your degree.</p>
+            </div>
+            <div>
+                <h4 class="text-xs font-black uppercase tracking-widest text-white mb-8">Developer Profile</h4>
+                <div class="space-y-4">
+                    <p class="text-blue-400 font-bold text-lg">Ankit Raj</p>
+                    <p class="text-slate-400 text-sm">1st Year CSE Student</p>
+                    <p class="text-slate-500 text-xs tracking-wide">Chandigarh University</p>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-xs font-black uppercase tracking-widest text-white mb-8">Connect & Support</h4>
+                <div class="flex space-x-6 text-2xl">
+                    <a href="#" class="text-slate-500 hover:text-white transition"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="text-slate-500 hover:text-blue-400 transition"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a target="_blank" href="https://www.instagram.com/yadavankiit_/" class="text-slate-500 hover:text-pink-400 transition"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+                <p class="text-slate-600 text-[10px] mt-8 uppercase tracking-widest">© 2026 FocusHub Build v4.2</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Modal State
+        function toggleLogin() { 
+            const m = document.getElementById('loginModal');
+            m.classList.contains('modal-hidden') ? m.classList.replace('modal-hidden', 'modal-show') : m.classList.replace('modal-show', 'modal-hidden');
+        }
+        function toggleFeatures() {
+            const m = document.getElementById('featuresModal');
+            m.classList.contains('modal-hidden') ? m.classList.replace('modal-hidden', 'modal-show') : m.classList.replace('modal-show', 'modal-hidden');
+        }
+
+        // Logic
+        let tasks = [];
+        let timeLeft = 25 * 60;
+        let timer = null;
+
+        function handleLogin() {
+            const name = document.getElementById('userName').value;
+            const goal = document.getElementById('userGoal').value;
+            if (name && goal) {
+                document.getElementById('welcomeText').innerText = name + "'s Hub";
+                document.getElementById('goalDisplay').innerText = goal;
+                toggleLogin();
+                window.location.hash = 'dashboard';
+            }
+        }
+
+        function setTimer() {
+            const val = document.getElementById('timerInput').value;
+            timeLeft = val * 60;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function toggleTimer() {
+            const b = document.getElementById('startBtn');
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+                b.innerText = "Initialize";
+            } else {
+                b.innerText = "Suspend";
+                timer = setInterval(() => {
+                    if (timeLeft > 0) { timeLeft--; updateDisplay(); }
+                    else { clearInterval(timer); alert("System Cycle Complete!"); }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timer = null;
+            setTimer();
+            document.getElementById('startBtn').innerText = "Initialize";
+        }
+
+        function addTask() {
+            const val = document.getElementById('taskInput').value;
+            if (val) {
+                tasks.push({ text: val, done: false });
+                document.getElementById('taskInput').value = "";
+                renderTasks();
+            }
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('taskList');
+            container.innerHTML = "";
+            tasks.forEach((t, i) => {
+                container.innerHTML += `
+                    <div onclick="toggleTask(${i})" class="btn-tech p-5 bg-slate-900/80 rounded-2xl flex items-center cursor-pointer border border-slate-800 hover:border-indigo-500/50">
+                        <input type="checkbox" ${t.done ? 'checked' : ''} class="mr-6 accent-indigo-500 h-5 w-5">
+                        <span class="text-sm font-bold ${t.done ? 'line-through text-slate-500' : 'text-slate-200'}">${t.text}</span>
+                    </div>`;
+            });
+            updateScore();
+        }
+
+        function toggleTask(i) {
+            tasks[i].done = !tasks[i].done;
+            renderTasks();
+        }
+
+        function updateScore() {
+            const done = tasks.filter(t => t.done).length;
+            const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+            document.getElementById('score').innerText = pct + "%";
+            document.getElementById('scoreBar').style.width = pct + "%";
+        }
+    </script>
+</body>
+</html>
